@@ -27,19 +27,15 @@ class DeckScreen extends React.Component {
   }
 
   componentDidMount () {
+    this.getDecks()
     this.props.navigation.addListener("didFocus", payload => {
       this.getDecks()
     })
-    this.getDecks()
-  }
-
-  componentDidFocus() {
-    console.log("wtf m8")
-    this.getDecks()
   }
 
   viewDeck(deck) {
-    console.log(deck)
+    // console.log("viewing deck")
+    this.props.navigation.navigate('DeckView', { deck: deck})
   }
 
   renderDeck(deck, key) {
