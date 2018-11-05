@@ -15,15 +15,16 @@ export default class CreateDeckScreen extends React.Component {
   onPress() {
     AsyncStorage.getItem('Decks').then(async (value) => {
       var decks = JSON.parse(value)
+      var id = uuidv1()
       if (!decks) {
         decks = {}
       }
-      decks[uuidv1()] = {
+      decks[id] = {
         title: this.state.title,
         cards: []
       }
       await AsyncStorage.setItem("Decks", JSON.stringify(decks))
-      this.props.navigation.navigate("Deck")
+      this.props.navigation.navigate("DeckView", {deck: id})
     }).catch(error => {
       console.log(error)
     })
