@@ -6,27 +6,29 @@ import {
 } from 'react-native';
 import {withNavigationFocus} from 'react-navigation';
 import {AsyncStorage} from 'react-native';
+import {setLocalNotification} from '../notifications'
 
 class DeckScreen extends React.Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      decks: []
+      decks: {}
     }
   }
 
   async removeDecks() {
     await AsyncStorage.removeItem("Decks")
+    this.getDecks()
   }
 
   async getDecks() {
     const decks = await AsyncStorage.getItem("Decks")
-    console.log(decks)
-    this.setState({decks: JSON.parse(decks)})
+    this.setState({decks: JSON.parse(decks) || {}})
   }
 
   componentDidMount () {
+    setLocalNotification()
     this.getDecks()
     this.props.navigation.addListener("didFocus", payload => {
       this.getDecks()
@@ -39,18 +41,28 @@ class DeckScreen extends React.Component {
   }
 
   renderDeck(deck, key) {
+    var style = {
+      padding: 20,
+      borderBottomWidth: 1
+    }
     return (
-      <Text key={key} onPress={() => {this.viewDeck(deck)}}>
-        {deck.title}
-      </Text>
+      <View key={key} style={style}>
+        <Text onPress={() => {this.viewDeck(deck)}}>
+          {this.state.decks[deck].title} - {this.state.decks[deck].cards.length} cards
+        </Text>
+      </View>
     )
   }
 
   render() {
+    var style={
+      fontSize: 20,
+      textAlign: "center"
+    }
     return (
       <View>
-        <Text>Decks</Text>
-        {this.state.decks && this.state.decks.map((deck, key) => {
+        <Text style={style}>Decks</Text>
+        {Object.keys(this.state.decks) && Object.keys(this.state.decks).map((deck, key) => {
           return this.renderDeck(deck, key)
         })}
 

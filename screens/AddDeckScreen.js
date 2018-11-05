@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, TextInput, View, Button} from 'react-native';
 import {AsyncStorage} from 'react-native'
+const uuidv1 = require('uuid/v1'); 
 
 export default class CreateDeckScreen extends React.Component {
 
@@ -13,23 +14,16 @@ export default class CreateDeckScreen extends React.Component {
 
   onPress() {
     AsyncStorage.getItem('Decks').then(async (value) => {
-      if (value) {
-
-        decks = JSON.parse(value)
-        decks.push({
-          title: this.state.title,
-          cards: []
-        })
-        await AsyncStorage.setItem("Decks", JSON.stringify(decks))
-
-      } else {
-        decks = []
-        decks.push({
-          title: this.state.title,
-          cards: []
-        })
-        await AsyncStorage.setItem("Decks", JSON.stringify(decks))
+      var decks = JSON.parse(value)
+      if (!decks) {
+        decks = {}
       }
+      decks[uuidv1()] = {
+        title: this.state.title,
+        cards: []
+      }
+      await AsyncStorage.setItem("Decks", JSON.stringify(decks))
+      this.props.navigation.navigate("Deck")
     }).catch(error => {
       console.log(error)
     })
@@ -37,7 +31,10 @@ export default class CreateDeckScreen extends React.Component {
 
   render() {
     var style = {
-      height: 80
+      padding: 10,
+      margin: 10,
+      height: 50,
+      borderWidth: 1
     }
 
     return (
